@@ -21,6 +21,7 @@ from pathlib import Path
 import pandas as pd
 
 from . import config, rules, schemas
+from .intake_adapters import AdapterSpec, get_adapter
 from .matching import flag_lookalike_domains, propose_near_duplicate_names
 
 
@@ -58,32 +59,55 @@ class IntakeResult:
 _READ_KWARGS = dict(keep_default_na=False, na_values=[])
 
 
-def load_engagement_setup(path: Path) -> dict:
-    df = pd.read_excel(
-        path,
-        sheet_name=config.SHEET_ENGAGEMENT_SETUP,
-        header=config.ENGAGEMENT_SETUP_HEADER_ROW,
-        usecols=config.ENGAGEMENT_SETUP_USECOLS,
-        **_READ_KWARGS,
+def load_engagement_setup(path: Path, adapter: AdapterSpec | None = None) -> dict:
+    sheet_name = adapter.sheet_name_for(config.SHEET_ENGAGEMENT_SETUP) if adapter else config.SHEET_ENGAGEMENT_SETUP
+    header_row = (
+        adapter.engagement_setup_header_row
+        if adapter and adapter.engagement_setup_header_row is not None
+        else config.ENGAGEMENT_SETUP_HEADER_ROW
     )
+    usecols = (
+        adapter.engagement_setup_usecols
+        if adapter and adapter.engagement_setup_usecols is not None
+        else config.ENGAGEMENT_SETUP_USECOLS
+    )
+    df = pd.read_excel(path, sheet_name=sheet_name, header=header_row, usecols=usecols, **_READ_KWARGS)
     df.columns = ["Field", "Value"]
     df = df[df["Field"].astype(str).str.strip() != ""]
-    return dict(zip(df["Field"], df["Value"]))
+    engagement = dict(zip(df["Field"], df["Value"]))
+    if adapter and adapter.engagement_field_map:
+        for source_field, canonical_field in adapter.engagement_field_map.items():
+            if source_field in engagement:
+                engagement[canonical_field] = engagement.pop(source_field)
+    return engagement
 
 
-def _load_sheet(path: Path, sheet_name: str) -> pd.DataFrame:
-    return pd.read_excel(path, sheet_name=sheet_name, header=config.POPULATION_HEADER_ROW, **_READ_KWARGS)
+def _load_sheet(path: Path, canonical_sheet_name: str, adapter: AdapterSpec | None = None) -> pd.DataFrame:
+    sheet_name = adapter.sheet_name_for(canonical_sheet_name) if adapter else canonical_sheet_name
+    header_row = (
+        adapter.header_row_for(canonical_sheet_name, config.POPULATION_HEADER_ROW)
+        if adapter
+        else config.POPULATION_HEADER_ROW
+    )
+    df = pd.read_excel(path, sheet_name=sheet_name, header=header_row, **_READ_KWARGS)
+    if adapter:
+        rename = adapter.columns_for(canonical_sheet_name)
+        if rename:
+            df = df.rename(columns=rename)
+    return df
 
 
-def load_all(path: Path | str = config.DEFAULT_SAMPLE_WORKBOOK) -> IntakeResult:
+def load_all(path: Path | str = config.DEFAULT_SAMPLE_WORKBOOK, adapter: AdapterSpec | str | None = None) -> IntakeResult:
     path = Path(path)
-    engagement = load_engagement_setup(path)
-    bank = _load_sheet(path, config.SHEET_BANK)
-    ar = _load_sheet(path, config.SHEET_AR)
-    legal = _load_sheet(path, config.SHEET_LEGAL)
-    intercompany = _load_sheet(path, config.SHEET_INTERCOMPANY)
-    gl_extract = _load_sheet(path, config.SHEET_GL_EXTRACT)
-    related_parties = _load_sheet(path, config.SHEET_RELATED_PARTY)
+    if isinstance(adapter, str):
+        adapter = get_adapter(adapter)
+    engagement = load_engagement_setup(path, adapter)
+    bank = _load_sheet(path, config.SHEET_BANK, adapter)
+    ar = _load_sheet(path, config.SHEET_AR, adapter)
+    legal = _load_sheet(path, config.SHEET_LEGAL, adapter)
+    intercompany = _load_sheet(path, config.SHEET_INTERCOMPANY, adapter)
+    gl_extract = _load_sheet(path, config.SHEET_GL_EXTRACT, adapter)
+    related_parties = _load_sheet(path, config.SHEET_RELATED_PARTY, adapter)
 
     result = IntakeResult(
         engagement=engagement,

@@ -63,7 +63,15 @@ an exception — those stay with the engagement team. Full spec: `docs/`.
 - **Tab/column name drift.** `schemas.py` must mirror `docs/io-spec.md`
   Section 1 exactly. If you change a column header in the sample workbook or
   a real engagement file, update `io-spec.md` first, then `schemas.py`, then
-  re-run `tests/test_intake.py` — in that order.
+  re-run `tests/test_intake.py` — in that order. If a *real client's* export
+  simply doesn't match `io-spec.md` (different tab names, renamed columns,
+  shifted header row), do not loosen `intake.py`'s validation or make
+  `schemas.py` "flexible" to cope — write a small `AdapterSpec` in
+  `src/confirmation_agent/intake_adapters/` instead (copy
+  `example_client.py`) and pass it via `load_all(path, adapter=...)` /
+  `--adapter <name>`. It normalizes that one client's layout onto the
+  canonical schema before validation runs, so `schemas.py`/`io-spec.md`
+  stay the single source of truth every downstream module relies on.
 - **Header-row offset.** Population tabs have `header=2` (title + subtitle +
   header at Excel row 3); Engagement Setup has `header=3, usecols="B:C"` (see
   `config.py`). A new sheet built with a different `write_table`/layout

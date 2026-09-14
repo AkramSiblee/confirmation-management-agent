@@ -61,6 +61,26 @@ the agent found. Expected output: 1 Tier 0 (a look-alike bank domain),
 flags, a blank non-standard-paragraph selection, two near-duplicate
 counterparty names). See `tests/test_intake.py` for the full assertion set.
 
+## When a client's workbook doesn't match `io-spec.md`
+
+`docs/io-spec.md` / `schemas.py` are the canonical input schema every module
+relies on — but a real client's export won't always match it exactly
+(different tab names, a shifted header row, renamed columns). Rather than
+loosening validation to guess at variant layouts, write a small
+`AdapterSpec` under `src/confirmation_agent/intake_adapters/` (copy
+`example_client.py`) that maps that client's actual layout onto the
+canonical one before validation runs:
+
+```bash
+confirmation-agent --input /path/to/client_export.xlsx --adapter example_client
+```
+
+An adapter only needs to list what's actually different for that client —
+everything else falls back to the canonical `config.py`/`schemas.py`
+values. See the module docstring in `intake_adapters/__init__.py` for the
+step-by-step, and `tests/test_intake_adapters.py` for the pattern proven
+against a synthetic mismatched workbook.
+
 ## Tests
 
 ```bash
@@ -137,6 +157,7 @@ confirmation-management-agent/
 │   ├── schemas.py                   # column-level schema constants (mirrors io-spec.md)
 │   ├── matching.py                  # domain look-alike + near-duplicate name proposals
 │   ├── intake.py                    # Step 1 — IMPLEMENTED
+│   ├── intake_adapters/             # per-client layout mapping onto io-spec.md's canonical schema
 │   ├── templates.py                 # Step 2 — scaffold
 │   ├── dispatch.py                  # Step 3 — scaffold
 │   ├── tracking.py                  # Step 4 — scaffold

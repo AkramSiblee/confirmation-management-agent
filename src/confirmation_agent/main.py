@@ -9,6 +9,9 @@ docstrings — that is the next build increment, not a bug.
 Usage:
     python -m confirmation_agent.main --input sample_data/confirmation-management-input-package.xlsx
     python -m confirmation_agent.main --input /path/to/real_engagement.xlsx --stop-after intake
+
+    # Client workbook doesn't match io-spec.md's canonical tab/column layout:
+    python -m confirmation_agent.main --input /path/to/client_export.xlsx --adapter example_client
 """
 
 from __future__ import annotations
@@ -19,6 +22,7 @@ from pathlib import Path
 
 from . import config
 from .intake import load_all, summarize
+from .intake_adapters import list_adapters
 
 
 def build_arg_parser() -> argparse.ArgumentParser:
@@ -30,6 +34,16 @@ def build_arg_parser() -> argparse.ArgumentParser:
         help="Path to the engagement input workbook (see docs/io-spec.md for the required tabs).",
     )
     parser.add_argument(
+        "--adapter",
+        default=None,
+        help=(
+            "Name of a registered intake adapter (src/confirmation_agent/intake_adapters/) "
+            "to normalize a client workbook that doesn't match io-spec.md's canonical tab/"
+            "column layout, before validation runs. Omit if the workbook already matches "
+            f"io-spec.md exactly. Registered: {', '.join(list_adapters()) or '(none)'}"
+        ),
+    )
+    parser.add_argument(
         "--stop-after",
         choices=["intake", "templates", "dispatch", "tracking", "chase", "exceptions", "reconciliation", "workpaper"],
         default="intake",
@@ -38,9 +52,9 @@ def build_arg_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def run(input_path: Path, stop_after: str) -> int:
-    print(f"Loading and validating: {input_path}")
-    result = load_all(input_path)
+def run(input_path: Path, stop_after: str, adapter: str | None = None) -> int:
+    print(f"Loading and validating: {input_path}" + (f" (adapter: {adapter})" if adapter else ""))
+    result = load_all(input_path, adapter=adapter)
     print(summarize(result))
 
     if stop_after == "intake":
@@ -57,7 +71,7 @@ def run(input_path: Path, stop_after: str) -> int:
 
 def main() -> None:
     args = build_arg_parser().parse_args()
-    sys.exit(run(args.input, args.stop_after))
+    sys.exit(run(args.input, args.stop_after, args.adapter))
 
 
 if __name__ == "__main__":
