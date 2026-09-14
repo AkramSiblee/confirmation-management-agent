@@ -130,6 +130,10 @@ class DraftedLetter:
     body: str
     recipient_email: str
     confirmation_type: str  # "bank" | "ar" | "legal" | "legal-bring-down" | "intercompany"
+    # Only meaningful when confirmation_type == "ar" — an AR Negative
+    # confirmation opens on the distinct non-chased status track
+    # (dispatch.py / CLAUDE.md Rule 2), never "Outstanding".
+    is_negative_ar: bool = False
 
 
 @dataclass
@@ -299,6 +303,7 @@ def draft_ar_letter(row, engagement: dict, issues: list) -> DraftedLetter:
         body=body,
         recipient_email=str(row.get("Customer Contact Email", "")),
         confirmation_type="ar",
+        is_negative_ar=(confirmation_type == "Negative"),
     )
 
 

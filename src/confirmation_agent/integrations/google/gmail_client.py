@@ -9,7 +9,7 @@ own Gmail client, not in this codebase.
 
 Setup (see README.md "Google Workspace setup"):
   - OAuth client credentials JSON path via GMAIL_CREDENTIALS_PATH (.env)
-  - Token cache path via GMAIL_TOKEN_PATH (.env)
+  - Token cache path via GMAIL_TOKEN_PATH (.env) — shared with drive_client.py
   - Scope required: https://www.googleapis.com/auth/gmail.compose
     (compose/draft scope only — deliberately NOT gmail.send)
 """
@@ -17,21 +17,22 @@ Setup (see README.md "Google Workspace setup"):
 from __future__ import annotations
 
 import base64
-import os
 from email.mime.text import MIMEText
 
-REQUIRED_SCOPES = ["https://www.googleapis.com/auth/gmail.compose"]
+from .auth import GMAIL_SCOPES as REQUIRED_SCOPES
+
+__all__ = ["REQUIRED_SCOPES", "create_draft"]
 
 
 def _get_service():
-    """Build an authenticated Gmail API service object.
+    """Build an authenticated Gmail API service object. Raises a clear
+    RuntimeError (via auth.get_credentials) if GMAIL_CREDENTIALS_PATH is
+    unset rather than falling back to any default location."""
+    from googleapiclient.discovery import build
 
-    NOT YET IMPLEMENTED. Use google-auth-oauthlib's InstalledAppFlow
-    with REQUIRED_SCOPES, caching the token at GMAIL_TOKEN_PATH. Raise
-    a clear error if GMAIL_CREDENTIALS_PATH is unset rather than
-    falling back to any default location.
-    """
-    raise NotImplementedError("Wire up OAuth per README.md 'Google Workspace setup'.")
+    from .auth import get_credentials
+
+    return build("gmail", "v1", credentials=get_credentials())
 
 
 def create_draft(*, to: str, subject: str, body: str, sender: str | None = None) -> str:
@@ -39,11 +40,20 @@ def create_draft(*, to: str, subject: str, body: str, sender: str | None = None)
 
     `sender` should be the audit-team-controlled mailbox from
     AUDIT_TEAM_MAILBOX (.env) — never a client-provided address. This
-    function must never call users.messages.send — only
-    users.drafts.create.
+    function calls ONLY users().drafts().create — never
+    users().messages().send. Do not add a send path here; see the
+    module docstring and CLAUDE.md Rule 1.
     """
-    raise NotImplementedError(
-        "service = _get_service(); build a MIMEText message, base64-encode it, "
-        "and call service.users().drafts().create(userId='me', body={...}).execute(). "
-        "Return the resulting draft id for the DispatchRecord."
-    )
+    if not to:
+        raise ValueError("create_draft() requires a non-empty 'to' address.")
+
+    service = _get_service()
+    message = MIMEText(body)
+    message["to"] = to
+    message["subject"] = subject
+    if sender:
+        message["from"] = sender
+
+    raw = base64.urlsafe_b64encode(message.as_bytes()).decode("utf-8")
+    draft = service.users().drafts().create(userId="me", body={"message": {"raw": raw}}).execute()
+    return draft["id"]

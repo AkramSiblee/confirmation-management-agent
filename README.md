@@ -17,13 +17,13 @@ standards basis, RACI, execution steps) and [`docs/io-spec.md`](docs/io-spec.md)
 |---|---|---|
 | 1. Intake & Validation | `src/confirmation_agent/intake.py` | **Implemented & tested** |
 | 2. Template Selection & Drafting | `templates.py` | **Implemented & tested** |
-| 3. Dispatch Logging | `dispatch.py` | Scaffolded — next increment |
-| 4. Response Tracking & Matching | `tracking.py` | Scaffolded |
+| 3. Dispatch Logging | `dispatch.py` | **Implemented & tested** (dry-run by default; `--live` needs Google OAuth setup) |
+| 4. Response Tracking & Matching | `tracking.py` | Scaffolded — next increment |
 | 5. Chase Cadence | `chase.py` | Scaffolded |
 | 6. Exception Schedule Consolidation | `exception_schedule.py` | Scaffolded |
 | 7. Reconciliation (GL & Intercompany) | `reconciliation.py` | Scaffolded |
 | 8. Workpaper Generation | `workpaper.py` | Scaffolded |
-| Gmail/Drive integration | `integrations/google/` | Scaffolded — draft-only by design |
+| Gmail/Drive integration | `integrations/google/` | **Implemented** — draft-only by design |
 | E-confirmation platform integration | `integrations/econfirmation/` | Placeholder — no provider wired up yet |
 
 Every scaffolded module has a full docstring citing the exact io-spec/workflow-skill
@@ -31,7 +31,7 @@ section it must satisfy, plus `NotImplementedError` bodies naming the concrete n
 step — start a Claude Code session in this folder and point it at one module at a
 time, in order, rather than asking for everything at once. Recommended order:
 `templates.py` → `dispatch.py` → `tracking.py` → `chase.py` → `reconciliation.py`
-→ `exception_schedule.py` → `workpaper.py` (see `CLAUDE.md`). Next up: `dispatch.py`.
+→ `exception_schedule.py` → `workpaper.py` (see `CLAUDE.md`). Next up: `tracking.py`.
 
 ## Setup
 
@@ -69,6 +69,17 @@ record — 46 drafted (bank, AR, legal, its 3 legal bring-downs, and 6
 intercompany two-sided requests), skipping the 6 records still blocked by
 an unresolved Tier 0/Tier 1 issue from Step 1 (drafting refuses on those,
 it never drafts-and-warns). See `tests/test_templates.py`.
+
+With `--stop-after dispatch`, Step 3 then logs a dispatch record for each
+drafted letter — 40 dispatched, 6 errors (the 6 intercompany two-sided
+requests, which always lack a recipient email since io-spec.md's
+Intercompany tab has no contact-email column — supply the internal
+contact directly before a real dispatch). By default this runs as a
+**dry run**: no real Gmail draft or Drive upload is created, only
+placeholder ids, so it works with zero Google Cloud setup. Pass `--live`
+once `GMAIL_CREDENTIALS_PATH` / `AUDIT_TEAM_MAILBOX` / `DRIVE_ROOT_FOLDER_ID`
+are configured in `.env` (see "Google Workspace setup" below) to actually
+create drafts. See `tests/test_dispatch.py`.
 
 ## When a client's workbook doesn't match `io-spec.md`
 
@@ -168,7 +179,7 @@ confirmation-management-agent/
 │   ├── intake.py                    # Step 1 — IMPLEMENTED
 │   ├── intake_adapters/             # per-client layout mapping onto io-spec.md's canonical schema
 │   ├── templates.py                 # Step 2 — IMPLEMENTED
-│   ├── dispatch.py                  # Step 3 — scaffold
+│   ├── dispatch.py                  # Step 3 — IMPLEMENTED (dry-run by default)
 │   ├── tracking.py                  # Step 4 — scaffold
 │   ├── chase.py                     # Step 5 — scaffold
 │   ├── exception_schedule.py        # Step 6 — scaffold
@@ -176,6 +187,7 @@ confirmation-management-agent/
 │   ├── workpaper.py                 # Step 8 — scaffold
 │   ├── integrations/
 │   │   ├── google/
+│   │   │   ├── auth.py              # shared OAuth flow (one token, both scopes)
 │   │   │   ├── gmail_client.py      # draft-only, never send
 │   │   │   └── drive_client.py
 │   │   └── econfirmation/           # placeholder — no platform wired up yet
@@ -188,6 +200,7 @@ confirmation-management-agent/
 ├── tests/
 │   ├── test_intake.py               # 8 passing tests against the sample workbook
 │   ├── test_intake_adapters.py      # 3 tests for the client-adapter mechanism
-│   └── test_templates.py            # 8 tests for Step 2 drafting
+│   ├── test_templates.py            # 8 tests for Step 2 drafting
+│   └── test_dispatch.py             # 9 tests for Step 3 dispatch logging
 └── outputs/                         # generated workpapers land here (gitignored)
 ```
