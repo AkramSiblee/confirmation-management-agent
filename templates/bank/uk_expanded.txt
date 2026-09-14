@@ -1,0 +1,30 @@
+[DRAFT — BANK CONFIRMATION LETTER — EXPANDED FORM]
+(UK — ICAEW / Audit Practices Board bank confirmation letter, with
+non-standard paragraphs attached per the population's request)
+
+Date: $confirmation_date
+
+$bank_name
+For the attention of the Audit Confirmations Department
+
+Re: $entity_name — balance confirmation as at close of business on
+$confirmation_date
+Account number(s): $account_numbers
+
+Dear Sirs,
+
+In accordance with the guidance issued by the Institute of Chartered
+Accountants in England and Wales (ICAEW) on bank confirmation requests, we
+ask that you confirm directly to our auditors, at the address below, the
+balance(s) held for $entity_name in the account(s) above as at close of
+business on $confirmation_date:
+
+  Account balance(s): $currency $gl_balance
+
+In addition to the standard confirmation above, please address each of the
+following items specifically requested for this account:
+$non_standard_paragraphs
+Please reply directly to our auditors using the enclosed envelope,
+irrespective of whether the above agrees with your records.
+
+$auditor_signoff

@@ -16,8 +16,8 @@ standards basis, RACI, execution steps) and [`docs/io-spec.md`](docs/io-spec.md)
 | Step | Module | Status |
 |---|---|---|
 | 1. Intake & Validation | `src/confirmation_agent/intake.py` | **Implemented & tested** |
-| 2. Template Selection & Drafting | `templates.py` | Scaffolded — next increment |
-| 3. Dispatch Logging | `dispatch.py` | Scaffolded |
+| 2. Template Selection & Drafting | `templates.py` | **Implemented & tested** |
+| 3. Dispatch Logging | `dispatch.py` | Scaffolded — next increment |
 | 4. Response Tracking & Matching | `tracking.py` | Scaffolded |
 | 5. Chase Cadence | `chase.py` | Scaffolded |
 | 6. Exception Schedule Consolidation | `exception_schedule.py` | Scaffolded |
@@ -31,7 +31,7 @@ section it must satisfy, plus `NotImplementedError` bodies naming the concrete n
 step — start a Claude Code session in this folder and point it at one module at a
 time, in order, rather than asking for everything at once. Recommended order:
 `templates.py` → `dispatch.py` → `tracking.py` → `chase.py` → `reconciliation.py`
-→ `exception_schedule.py` → `workpaper.py` (see `CLAUDE.md`).
+→ `exception_schedule.py` → `workpaper.py` (see `CLAUDE.md`). Next up: `dispatch.py`.
 
 ## Setup
 
@@ -46,11 +46,14 @@ The editable install registers a `confirmation-agent` console script and makes
 `confirmation_agent` importable from anywhere in the repo — no `PYTHONPATH`
 juggling needed, in the terminal or in VS Code.
 
-## Running Step 1 against the sample engagement
+## Running Step 1 & 2 against the sample engagement
 
 ```bash
 confirmation-agent --input sample_data/confirmation-management-input-package.xlsx
 # equivalent: python -m confirmation_agent.main --input ...
+
+# also run Step 2 (template selection & drafting):
+confirmation-agent --input sample_data/confirmation-management-input-package.xlsx --stop-after templates
 ```
 
 This loads `sample_data/confirmation-management-input-package.xlsx` — a
@@ -60,6 +63,12 @@ the agent found. Expected output: 1 Tier 0 (a look-alike bank domain),
 5 Tier 1 (missing contact emails), 6 Tier 2 (understated related-party
 flags, a blank non-standard-paragraph selection, two near-duplicate
 counterparty names). See `tests/test_intake.py` for the full assertion set.
+
+With `--stop-after templates`, Step 2 then drafts a letter for every
+record — 46 drafted (bank, AR, legal, its 3 legal bring-downs, and 6
+intercompany two-sided requests), skipping the 6 records still blocked by
+an unresolved Tier 0/Tier 1 issue from Step 1 (drafting refuses on those,
+it never drafts-and-warns). See `tests/test_templates.py`.
 
 ## When a client's workbook doesn't match `io-spec.md`
 
@@ -158,7 +167,7 @@ confirmation-management-agent/
 │   ├── matching.py                  # domain look-alike + near-duplicate name proposals
 │   ├── intake.py                    # Step 1 — IMPLEMENTED
 │   ├── intake_adapters/             # per-client layout mapping onto io-spec.md's canonical schema
-│   ├── templates.py                 # Step 2 — scaffold
+│   ├── templates.py                 # Step 2 — IMPLEMENTED
 │   ├── dispatch.py                  # Step 3 — scaffold
 │   ├── tracking.py                  # Step 4 — scaffold
 │   ├── chase.py                     # Step 5 — scaffold
@@ -171,7 +180,14 @@ confirmation-management-agent/
 │   │   │   └── drive_client.py
 │   │   └── econfirmation/           # placeholder — no platform wired up yet
 │   └── main.py                      # CLI entrypoint (also the `confirmation-agent` script)
+├── templates/                       # letter body text, $placeholder-rendered by templates.py
+│   ├── bank/                        # us_standard/expanded, uk_standard/expanded, ca_standard/expanded
+│   ├── ar/                          # positive_standard, positive_blank, negative
+│   ├── legal/                       # standard, bring_down
+│   └── intercompany/                # data_request (two-sided, internal)
 ├── tests/
-│   └── test_intake.py               # 8 passing tests against the sample workbook
+│   ├── test_intake.py               # 8 passing tests against the sample workbook
+│   ├── test_intake_adapters.py      # 3 tests for the client-adapter mechanism
+│   └── test_templates.py            # 8 tests for Step 2 drafting
 └── outputs/                         # generated workpapers land here (gitignored)
 ```

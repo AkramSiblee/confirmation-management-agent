@@ -1,0 +1,26 @@
+[DRAFT — BRING-DOWN / UPDATE LETTER OF AUDIT INQUIRY]
+
+Date: $confirmation_date
+
+$law_firm_name
+
+Re: $client_name ($entity_name) — Update to Letter of Audit Inquiry dated
+$original_letter_date
+
+Dear Counsel,
+
+Further to our original letter of audit inquiry dated
+$original_letter_date regarding the following matter:
+
+  Matter: $matter_description
+
+please advise our independent auditors directly of any change in status,
+classification, or estimated exposure for this matter between
+$original_letter_date and the date of your response, through the
+anticipated date of the auditors' report. If there has been no change
+since the original letter, please state so explicitly.
+
+As with the original request, your response need only address matters to
+which you have given substantive attention on our behalf.
+
+$auditor_signoff

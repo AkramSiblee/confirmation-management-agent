@@ -1,0 +1,20 @@
+[DRAFT — ACCOUNTS RECEIVABLE CONFIRMATION — NEGATIVE FORM]
+
+Date: $confirmation_date
+
+$customer_name
+
+Re: Confirmation of Account Balance — $entity_name
+
+Dear Sir or Madam,
+
+Our records show a balance due to $entity_name of $currency $balance as of
+$confirmation_date.
+
+Please examine this information carefully. If it does NOT agree with your
+records, please report the discrepancy directly to our independent
+auditors, using the enclosed envelope, at the address below.
+
+If the above IS in agreement with your records, no reply is necessary.
+
+$auditor_signoff

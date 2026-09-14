@@ -1,0 +1,35 @@
+[DRAFT — LETTER OF AUDIT INQUIRY TO LEGAL COUNSEL]
+
+Date: $confirmation_date
+
+$law_firm_name
+
+Re: $client_name ($entity_name) — Audit Inquiry Regarding Litigation,
+Claims, and Assessments as of $period_end_date
+
+Dear Counsel,
+
+In connection with an audit of the financial statements of $client_name,
+management has identified the following matter on which your firm has
+been engaged on behalf of $entity_name:
+
+  Matter: $matter_description
+  Classification: $assertion_status
+  Management's assessment of outcome: $managements_assessment
+  Estimated exposure: $exposure
+
+We would appreciate your furnishing our auditors directly with the
+information requested regarding the above matter. Consistent with the
+American Bar Association's Statement of Policy Regarding Lawyers'
+Responses to Auditors' Requests for Information (December 29, 1975), or
+the analogous professional-body guidance applicable in your jurisdiction,
+your response need only address matters to which you have given
+substantive attention on our behalf.
+
+Please also confirm unbilled and unpaid fees for services rendered on
+behalf of $entity_name through $period_end_date: $currency $unbilled_fees.
+
+Kindly direct your response in writing directly to our independent
+auditors at the address below.
+
+$auditor_signoff

@@ -1,0 +1,31 @@
+[DRAFT — BANK CONFIRMATION LETTER — EXPANDED FORM]
+(Canada — CPA Canada standard bank confirmation, with non-standard
+paragraphs attached per the population's request)
+
+Date: $confirmation_date
+
+$bank_name
+Attention: Audit Confirmations Department
+
+Re: $entity_name — confirmation of account balance(s) as at close of
+business on $confirmation_date
+Account number(s): $account_numbers
+
+To Whom It May Concern:
+
+In connection with an audit of the financial statements of $client_name,
+please confirm directly to our auditors, at the address below, the
+balance(s) held for $entity_name in the account(s) above as at close of
+business on $confirmation_date, per the CPA Canada standard bank
+confirmation request:
+
+  Account balance(s): $currency $gl_balance
+
+In addition to the standard confirmation above, please address each of the
+following items specifically requested for this account:
+$non_standard_paragraphs
+Please reply directly to our auditors using the enclosed envelope,
+whether or not the balance(s) and other information shown agree with your
+records.
+
+$auditor_signoff

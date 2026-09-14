@@ -1,10 +1,11 @@
 """
 Confirmation Management Agent — CLI entrypoint.
 
-Current state: Step 1 (intake & validation) is fully implemented and
-runs end-to-end against the sample workbook. Steps 2-8 are scaffolded
-in their own modules with NotImplementedError bodies and detailed
-docstrings — that is the next build increment, not a bug.
+Current state: Step 1 (intake & validation) and Step 2 (template
+selection & drafting) are fully implemented and run end-to-end against
+the sample workbook. Steps 3-8 are scaffolded in their own modules with
+NotImplementedError bodies and detailed docstrings — that is the next
+build increment, not a bug.
 
 Usage:
     python -m confirmation_agent.main --input sample_data/confirmation-management-input-package.xlsx
@@ -23,6 +24,7 @@ from pathlib import Path
 from . import config
 from .intake import load_all, summarize
 from .intake_adapters import list_adapters
+from .templates import draft_all, summarize_drafting
 
 
 def build_arg_parser() -> argparse.ArgumentParser:
@@ -47,7 +49,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
         "--stop-after",
         choices=["intake", "templates", "dispatch", "tracking", "chase", "exceptions", "reconciliation", "workpaper"],
         default="intake",
-        help="Pipeline stage to stop after. Only 'intake' is implemented today.",
+        help="Pipeline stage to stop after. Only 'intake' and 'templates' are implemented today.",
     )
     return parser
 
@@ -60,10 +62,17 @@ def run(input_path: Path, stop_after: str, adapter: str | None = None) -> int:
     if stop_after == "intake":
         return 0
 
+    batch = draft_all(result)
+    print()
+    print(summarize_drafting(batch))
+
+    if stop_after == "templates":
+        return 0
+
     print(
-        f"\n--stop-after={stop_after} requested, but Steps 2-8 are not yet implemented. "
+        f"\n--stop-after={stop_after} requested, but Steps 3-8 are not yet implemented. "
         "See docs/workflow-skill.md for the full step sequence and each module's "
-        "docstring (templates.py, dispatch.py, tracking.py, chase.py, exceptions.py, "
+        "docstring (dispatch.py, tracking.py, chase.py, exception_schedule.py, "
         "reconciliation.py, workpaper.py) for what to build next."
     )
     return 1

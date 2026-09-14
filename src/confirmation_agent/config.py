@@ -15,6 +15,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SAMPLE_DATA_DIR = PROJECT_ROOT / "sample_data"
 OUTPUTS_DIR = PROJECT_ROOT / "outputs"
+TEMPLATES_DIR = PROJECT_ROOT / "templates"
 DEFAULT_SAMPLE_WORKBOOK = SAMPLE_DATA_DIR / "confirmation-management-input-package.xlsx"
 
 # ---------------------------------------------------------------------------

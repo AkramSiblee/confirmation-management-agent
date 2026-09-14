@@ -1,0 +1,24 @@
+[DRAFT — ACCOUNTS RECEIVABLE CONFIRMATION — POSITIVE, BLANK FORM]
+
+Date: $confirmation_date
+
+$customer_name
+
+Re: Confirmation of Account Balance — $entity_name
+
+Dear Sir or Madam,
+
+In connection with an audit of the financial statements of $client_name,
+our independent auditors request that you state, directly to them, the
+balance due to $entity_name as of $confirmation_date per your own records
+(the balance is intentionally not pre-printed on this request):
+
+  Balance due, per your records: $currency ____________________
+
+Please sign, date, and return this letter directly to our auditors using
+the enclosed envelope, whether or not you show any balance outstanding.
+
+This confirmation is requested directly by our auditors and should be
+returned to them, not to us, at the address below.
+
+$auditor_signoff

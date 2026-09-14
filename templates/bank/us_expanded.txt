@@ -1,0 +1,29 @@
+[DRAFT — BANK CONFIRMATION LETTER — EXPANDED FORM]
+(US — AICPA / ABA / Bank Administration Institute Standard Form, with
+non-standard paragraphs attached per the population's request)
+
+Date: $confirmation_date
+
+$bank_name
+Attn: Audit Confirmations Department
+
+Re: Confirmation of account balance(s) held for $entity_name
+Account number(s): $account_numbers
+
+To Whom It May Concern:
+
+In connection with an audit of the financial statements of $client_name, we
+have provided our auditors with the following information as of the close
+of business on $confirmation_date, and we ask that you confirm its accuracy
+(or note any exceptions) directly to our auditors at the address below:
+
+  Account balance(s): $currency $gl_balance
+
+In addition to the standard confirmation above, please address each of the
+following items specifically requested for this account:
+$non_standard_paragraphs
+Please send your reply directly to our auditors, using the enclosed
+envelope, whether or not the balance(s) and other information shown agree
+with your records. No reply to us directly satisfies this request.
+
+$auditor_signoff

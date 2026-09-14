@@ -1,0 +1,26 @@
+[DRAFT — INTERCOMPANY BALANCE AGREEMENT DATA REQUEST]
+(Internal, ISA 600 (Revised)/AU-C 600-adjacent component procedure — this
+is NOT a third-party ISA 505/AU-C 505 external confirmation.)
+
+Date: $confirmation_date
+
+To: $recipient_component — Finance/Controller contact
+(Recipient contact email is not captured on the Intercompany Balance
+Agreement tab — supply the correct internal contact directly before
+dispatch.)
+
+Re: Intercompany Balance Agreement — $component_a / $component_b, as of
+$period_end_date
+
+As part of the group audit consolidation procedures, please confirm
+$recipient_component's recorded balance due to/from $counterparty_component
+as of $period_end_date:
+
+  Nature of balance: $nature_of_balance
+  Recorded balance per $recipient_component's books: $recipient_currency $recipient_balance
+
+Please reply confirming this amount, or noting any difference, so it can
+be reconciled against $counterparty_component's independently recorded
+balance for the same arrangement.
+
+$auditor_signoff
