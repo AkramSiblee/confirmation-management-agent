@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Secrets — never commit these
+.env
+*credentials*.json
+token.json
+gmail_token.json
+
+# Generated workpapers / real client data — never commit these
+outputs/*
+!outputs/.gitkeep
+
+# OS / editor
+.DS_Store
+*.egg-info/
+build/
+dist/
