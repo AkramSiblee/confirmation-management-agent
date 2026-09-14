@@ -8,6 +8,7 @@ venv/
 
 # Secrets — never commit these
 .env
+secrets/
 *credentials*.json
 token.json
 gmail_token.json

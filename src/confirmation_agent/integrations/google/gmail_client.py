@@ -49,10 +49,10 @@ def create_draft(*, to: str, subject: str, body: str, sender: str | None = None)
 
     service = _get_service()
     message = MIMEText(body)
-    message["to"] = to
-    message["subject"] = subject
+    message["To"] = to
+    message["Subject"] = subject
     if sender:
-        message["from"] = sender
+        message["From"] = sender
 
     raw = base64.urlsafe_b64encode(message.as_bytes()).decode("utf-8")
     draft = service.users().drafts().create(userId="me", body={"message": {"raw": raw}}).execute()
